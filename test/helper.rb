@@ -1,7 +1,8 @@
-dir = File.dirname(File.expand_path(__FILE__))
-$LOAD_PATH.unshift dir + "/../lib"
+require 'mocha'
 
-require "minitest/autorun"
-require "mocha/test_unit"
-require "shoulda-context"
-require "nibbler"
+require 'minitest/autorun'
+require 'mocha/minitest'
+
+require 'shoulda-context'
+
+require 'midi-parser'

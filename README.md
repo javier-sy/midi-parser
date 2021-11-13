@@ -17,7 +17,7 @@ or using Bundler, add this to your Gemfile
 ```ruby
 require 'nibbler'
 
-nibbler = Nibbler.new
+nibbler = MIDIParser.new
 ```
 
 Enter a message piece by piece
@@ -118,15 +118,29 @@ nibbler.parse("904040", :timestamp => Time.now.to_i)
 Nibbler defaults to generate [midi-message](http://github.com/arirusso/midi-message) objects, but it is also possible to use [midilib](https://github.com/jimm/midilib)
 
 ```ruby
-Nibbler.new(:message_lib => :midilib)
+MIDIParser.new(:message_lib => :midilib)
 
 nibbler.parse("9", "0", 0x40, "40")
-  => "0: ch 00 on 40 40"
+=> "0: ch 00 on 40 40"
 ```
 
 ## Also see
 
 * [midi-eye](http://github.com/arirusso/midi-eye), a MIDI event listener based on nibbler
+
+## Differences between [MIDI Parser](https://github.com/javier-sy/midi-parser) and [Nibbler](https://github.com/arirusso/nibbler)
+[MIDI Parser](https://github.com/javier-sy/midi-parser) is mostly a clone of [Nibbler](https://github.com/arirusso/nibbler) with some modifications:
+* Renamed gem to midi-parser instead of nibbler
+* Renamed module to MIDIParser instead of Nibbler
+* Changed backend library midi-message to midi-events
+* Removed backend library MIDIlib
+* Removed logging to reduce parsing overhead
+* Updated dependencies versions
+* Source updated to Ruby 2.7 code conventions (method keyword parameters instead of options = {}, hash keys as 'key:' instead of ':key =>', etc.)
+* Minor docs fixing 
+* TODO: update tests to use rspec instead of rake
+* TODO: migrate to (or confirm it's working ok on) Ruby 3.0 or Ruby 3.1
+
 
 ## Author
 

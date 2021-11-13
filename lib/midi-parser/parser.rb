@@ -1,24 +1,17 @@
-module Nibbler
-
+module MIDIParser
   class Parser
-
     attr_reader :buffer
 
-    def initialize(library)
-      @library = library
+    def initialize
       @running_status = RunningStatus.new
       @buffer = []
     end
 
     # Process the given nibbles and add them to the buffer
     # @param [Array<String, Integer>] nibbles
-    # @return [Hash]
+    # @return [Array<MIDIEvent>]
     def process(nibbles)
-      report = {
-        :messages => [],
-        :processed => [],
-        :rejected => []
-      }
+      messages = []
       pointer = 0
       @buffer += nibbles
       # Iterate through nibbles in the buffer until a status message is found
@@ -28,19 +21,16 @@ module Nibbler
         # See if there really is a message there
         unless (processed = nibbles_to_message(fragment)).nil?
           # if fragment contains a real message, reject the nibbles that precede it
-          report[:rejected] += @buffer.slice(0, pointer)
-          # and record it
           @buffer = fragment.dup # fragment now has the remaining nibbles for next pass
           fragment = nil # Reset fragment
           pointer = 0 # Reset iterator
-          report[:messages] << processed[:message]
-          report[:processed] += processed[:processed]
+          messages << processed[:message]
         else
           @running_status.cancel
           pointer += 1
         end
       end
-      report
+      messages
     end
 
     # If possible, convert the given fragment to a MIDI message
@@ -61,11 +51,11 @@ module Nibbler
     # @return [Hash, nil]
     def compute_message(nibbles, fragment)
       case nibbles[0]
-      when 0x8..0xE then lookahead(fragment, MessageBuilder.for_channel_message(@library, nibbles[0]))
-      when 0xF then
+      when 0x8..0xE then lookahead(fragment, MessageBuilder.for_channel_message(nibbles[0]))
+      when 0xF
         case nibbles[1]
         when 0x0 then lookahead_for_sysex(fragment)
-        else lookahead(fragment, MessageBuilder.for_system_message(@library, nibbles[1]), :recursive => true)
+        else lookahead(fragment, MessageBuilder.for_system_message(nibbles[1]), recursive: true)
         end
       else
         lookahead_using_running_status(fragment) if @running_status.possible?
@@ -76,7 +66,7 @@ module Nibbler
     # @param [Array<String>] fragment A fragment of data eg ["4", "0", "5", "0"]
     # @return [Hash, nil]
     def lookahead_using_running_status(fragment)
-      lookahead(fragment, @running_status[:message_builder], :offset => @running_status[:offset], :status_nibble_2 => @running_status[:status_nibble_2])
+      lookahead(fragment, @running_status[:message_builder], offset: @running_status[:offset], status_nibble_2: @running_status[:status_nibble_2])
     end
 
     # Get the data in the buffer for the given pointer
@@ -116,11 +106,11 @@ module Nibbler
 
         message = message_builder.build(*message_args)
         {
-          :message => message,
-          :processed => nibbles
+          message: message,
+          processed: nibbles
         }
       elsif num_nibbles > 0 && !!options[:recursive]
-        lookahead(fragment, message_builder, options.merge({ :offset => offset - 2 }))
+        lookahead(fragment, message_builder, options.merge({ offset: offset - 2 }))
       end
     end
 
@@ -129,16 +119,15 @@ module Nibbler
       bytes = TypeConversion.hex_chars_to_numeric_bytes(fragment)
       unless (index = bytes.index(0xF7)).nil?
         message_data = bytes.slice!(0, index + 1)
-        message = MessageBuilder.build_system_exclusive(@library, *message_data)
+        message = MessageBuilder.build_system_exclusive(*message_data)
         {
-          :message => message,
-          :processed => fragment.slice!(0, (index + 1) * 2)
+          message: message,
+          processed: fragment.slice!(0, (index + 1) * 2)
         }
       end
     end
 
     class RunningStatus
-
       extend Forwardable
 
       def_delegators :@state, :[]
@@ -155,14 +144,11 @@ module Nibbler
 
       def set(offset, message_builder, status_nibble_2)
         @state = {
-          :message_builder => message_builder,
-          :offset => offset,
-          :status_nibble_2 => status_nibble_2
+          message_builder: message_builder,
+          offset: offset,
+          status_nibble_2: status_nibble_2
         }
       end
-
     end
-
   end
-
 end

@@ -1,8 +1,6 @@
-module Nibbler
-
+module MIDIParser
   # A helper for converting between different types of nibbles and bytes
   module TypeConversion
-
     extend self
 
     # Converts an array of hex nibble strings to numeric bytes
@@ -13,9 +11,9 @@ module Nibbler
       nibbles = nibbles.dup
       # get rid of last nibble if there's an odd number
       # it will be processed later anyway
-      nibbles.slice!(nibbles.length-2, 1) if nibbles.length.odd?
+      nibbles.slice!(nibbles.length - 2, 1) if nibbles.length.odd?
       bytes = []
-      until (nibs = nibbles.slice!(0,2)).empty?
+      until (nibs = nibbles.slice!(0, 2)).empty?
         byte = (nibs[0].hex << 4) + nibs[1].hex
         bytes << byte
       end
@@ -50,7 +48,7 @@ module Nibbler
 
     # Converts an array bytes to an array of nibbles
     # eg [0x90, 0x50, 0x40] => [0x9, 0x0, 0x5, 0x0, 0x4, 0x0]
-    # @param [String] string
+    # @param [Array<Integer>] bytes
     # @return [Array<String>]
     def numeric_bytes_to_numeric_nibbles(bytes)
       bytes.map { |byte| numeric_byte_to_numeric_nibbles(byte) }.flatten
@@ -70,7 +68,5 @@ module Nibbler
     def numeric_byte_to_numeric_nibbles(num)
       [((num & 0xF0) >> 4), (num & 0x0F)]
     end
-
   end
-
 end

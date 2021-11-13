@@ -1,83 +1,83 @@
-require "helper"
+require 'helper'
 
-class Nibbler::DataProcessorTest < Minitest::Test
+class MIDIParser::DataProcessorTest < Minitest::Test
 
-  context "DataProcessor" do
+  context 'DataProcessor' do
 
     setup do
-      @processor = Nibbler::DataProcessor
+      @processor = MIDIParser::DataProcessor
     end
 
-    context "#process" do
+    context '#process' do
 
-      context "string" do
+      context 'string' do
 
         setup do
-          @str = "904050"
+          @str = '904050'
           @nibbles = @processor.send(:process, @str)
         end
 
-        should "not alter input" do
-          assert_equal("904050", @str)
+        should 'not alter input' do
+          assert_equal('904050', @str)
         end
 
-        should "return correct nibbles" do
-          assert_equal(["9", "0", "4", "0", "5", "0"], @nibbles)
+        should 'return correct nibbles' do
+          assert_equal(['9', '0', '4', '0', '5', '0'], @nibbles)
         end
 
       end
 
-      context "numeric" do
+      context 'numeric' do
 
         setup do
           @num = 0x90
           @nibbles = @processor.send(:process, @num)
         end
 
-        should "not alter input" do
+        should 'not alter input' do
           assert_equal(0x90, @num)
         end
 
-        should "return correct nibbles" do
-          assert_equal(["9", "0"], @nibbles)
+        should 'return correct nibbles' do
+          assert_equal(['9', '0'], @nibbles)
         end
 
       end
 
-      context "mixed types" do
+      context 'mixed types' do
 
         setup do
-          @array = [0x90, "90", "9"]
+          @array = [0x90, '90', '9']
         end
 
-        context "normal" do
+        context 'normal' do
 
           setup do
             @nibbles = @processor.send(:process, @array)
           end
 
-          should "not alter input" do
-            assert_equal([0x90, "90", "9"], @array)
+          should 'not alter input' do
+            assert_equal([0x90, '90', '9'], @array)
           end
 
-          should "return correct nibbles" do
-            assert_equal(["9", "0", "9", "0", "9"], @nibbles)
+          should 'return correct nibbles' do
+            assert_equal(['9', '0', '9', '0', '9'], @nibbles)
           end
 
         end
 
-        context "splatted" do
+        context 'splatted' do
 
           setup do
             @nibbles = @processor.send(:process, *@array)
           end
 
-          should "not alter input" do
-            assert_equal([0x90, "90", "9"], @array)
+          should 'not alter input' do
+            assert_equal([0x90, '90', '9'], @array)
           end
 
-          should "return correct nibbles" do
-            assert_equal(["9", "0", "9", "0", "9"], @nibbles)
+          should 'return correct nibbles' do
+            assert_equal(['9', '0', '9', '0', '9'], @nibbles)
           end
 
         end
@@ -86,37 +86,37 @@ class Nibbler::DataProcessorTest < Minitest::Test
 
     end
 
-    context "#filter_numeric" do
+    context '#filter_numeric' do
 
-      context "filtered" do
+      context 'filtered' do
 
         setup do
           @num = 560
           @result = @processor.send(:filter_numeric, @num)
         end
 
-        should "not alter input" do
+        should 'not alter input' do
           assert_equal(560, @num)
         end
 
-        should "return nil" do
+        should 'return nil' do
           assert_nil @result
         end
 
       end
 
-      context "passing" do
+      context 'passing' do
 
         setup do
           @num = 50
           @result = @processor.send(:filter_numeric, @num)
         end
 
-        should "not alter input" do
+        should 'not alter input' do
           assert_equal(50, @num)
         end
 
-        should "return number" do
+        should 'return number' do
           assert_equal(50, @result)
         end
 
@@ -124,19 +124,19 @@ class Nibbler::DataProcessorTest < Minitest::Test
 
     end
 
-    context "#filter_string" do
+    context '#filter_string' do
 
       setup do
-        @input = "(0xAdjskla#(#"
+        @input = '(0xAdjskla#(#'
         @result = @processor.send(:filter_string, @input)
       end
 
-      should "not alter input" do
-        assert_equal("(0xAdjskla#(#", @input)
+      should 'not alter input' do
+        assert_equal('(0xAdjskla#(#', @input)
       end
 
-      should "return valid chars" do
-        assert_equal("0ADA", @result)
+      should 'return valid chars' do
+        assert_equal('0ADA', @result)
       end
 
     end
