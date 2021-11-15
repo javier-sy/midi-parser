@@ -1,36 +1,48 @@
-# Nibbler
+# MIDI Parser
 
-![nibbler](http://i.imgur.com/4BFZPJY.png)
+**Ruby Parser for Raw MIDI Messages**
 
-Parse MIDI Messages
+This library is part of a suite of Ruby libraries for MIDI:
+
+| Function | Library |
+| --- | --- |
+| MIDI Events representation | [MIDI Events](https://github.com/javier-sy/midi-events) |
+| MIDI Data parsing | [MIDI Parser](https://github.com/javier-sy/midi-parser) |
+| MIDI communication with Instruments and Control Surfaces | [MIDI Communications](https://github.com/javier-sy/midi-communications) |
+| Low level MIDI interface to MacOS | [MIDI Communications MacOS Layer](https://github.com/javier-sy/midi-communications-macos) |
+| Low level MIDI interface to Linux | **TO DO** | 
+| Low level MIDI interface to JRuby | **TO DO** | 
+| Low level MIDI interface to Windows | **TO DO** | 
+
+This library is based on [Ari Russo's](http://github.com/arirusso) library [Nibbler](https://github.com/arirusso/nibbler).
 
 ## Install
 
-`gem install midi-nibbler`
+`gem install midi-parser`
 
 or using Bundler, add this to your Gemfile
 
-`gem "midi-nibbler"`
+`gem "midi-parser"`
 
 ## Usage
 
 ```ruby
-require 'nibbler'
+require 'midi-parser'
 
-nibbler = MIDIParser.new
+midi_parser = MIDIParser.new
 ```
 
-Enter a message piece by piece
+Enter a message piece by piece:
 
 ```ruby
-nibbler.parse("90")
+midi_parser.parse("90")
   => nil
 
-nibbler.parse("40")
+midi_parser.parse("40")
   => nil
 
-nibbler.parse("40")
-  => #<MIDIMessage::NoteOn:0x98c9818
+midi_parser.parse("40")
+  => #<MIDIEvents::NoteOn:0x98c9818
        @channel=0,
        @data=[64, 100],
        @name="C3",
@@ -40,12 +52,12 @@ nibbler.parse("40")
        @verbose_name="Note On: C3">
 ```
 
-Enter a message all at once
+Enter a message all at once:
 
 ```ruby
-nibbler.parse("904040")
+midi_parser.parse("904040")
 
-  => #<MIDIMessage::NoteOn:0x98c9818
+  => #<MIDIEvents::NoteOn:0x98c9818
         @channel=0,
         @data=[64, 100],
         @name="C3",
@@ -55,99 +67,121 @@ nibbler.parse("904040")
         @verbose_name="Note On: C3">
 ```
 
-Use bytes
+Use bytes:
 
 ```ruby
-nibbler.parse(0x90, 0x40, 0x40)
-  => #<MIDIMessage::NoteOn:0x98c9818 ...>
+midi_parser.parse(0x90, 0x40, 0x40)
+  => #<MIDIEvents::NoteOn:0x98c9818 ...>
 ```
 
-You can use nibbles in string format
+You can use nibbles in string format:
 
 ```ruby
-nibbler.parse("9", "0", "4", "0", "4", "0")
-  => #<MIDIMessage::NoteOn:0x98c9818 ...>
+midi_parser.parse("9", "0", "4", "0", "4", "0")
+  => #<MIDIEvents::NoteOn:0x98c9818 ...>
 ```
 
-Interchange the different types
+Interchange the different types:
 
 ```ruby
-nibbler.parse("9", "0", 0x40, 64)
-  => #<MIDIMessage::NoteOn:0x98c9818 ...>
+midi_parser.parse("9", "0", 0x40, 64)
+  => #<MIDIEvents::NoteOn:0x98c9818 ...>
 ```
 
-Use running status
+Use running status:
 
 ```ruby
-nibbler.parse(0x40, 64)
-  => #<MIDIMessage::NoteOn:0x98c9818 ...>
+midi_parser.parse(0x40, 64)
+  => #<MIDIMEvents::NoteOn:0x98c9818 ...>
 ```
 
-Look at the messages we've parsed
+Add an incomplete message:
 
 ```ruby
-nibbler.messages
-  => [#<MIDIMessage::NoteOn:0x98c9804 ...>
-      #<MIDIMessage::NoteOn:0x98c9811 ...>]
+midi_parser.parse("9")
+midi_parser.parse("40")
 ```
 
-Add an incomplete message
+See progress:
 
 ```ruby
-nibbler.parse("9")
-nibbler.parse("40")
-```
-
-See progress
-
-```ruby
-nibbler.buffer
+midi_parser.buffer
   => ["9", "4", "0"]
 
-nibbler.buffer_s
+midi_parser.buffer_s
   => "940"
 ```
 
-Pass in a timestamp
+MIDI Parser generates [midi-events](http://github.com/javier-sy/midi-events) objects.
 
-```ruby
-nibbler.parse("904040", :timestamp => Time.now.to_i)
-  => { :messages=> #<MIDIMessage::NoteOn:0x92f4564 ..>, :timestamp=>1304488440 }
-```
+## Documentation
 
-Nibbler defaults to generate [midi-message](http://github.com/arirusso/midi-message) objects, but it is also possible to use [midilib](https://github.com/jimm/midilib)
-
-```ruby
-MIDIParser.new(:message_lib => :midilib)
-
-nibbler.parse("9", "0", 0x40, "40")
-=> "0: ch 00 on 40 40"
-```
-
-## Also see
-
-* [midi-eye](http://github.com/arirusso/midi-eye), a MIDI event listener based on nibbler
+* (**TO DO**) [rdoc](http://rubydoc.info/github/javier-sy/midi-parser) 
 
 ## Differences between [MIDI Parser](https://github.com/javier-sy/midi-parser) and [Nibbler](https://github.com/arirusso/nibbler)
 [MIDI Parser](https://github.com/javier-sy/midi-parser) is mostly a clone of [Nibbler](https://github.com/arirusso/nibbler) with some modifications:
-* Renamed gem to midi-parser instead of nibbler
-* Renamed module to MIDIParser instead of Nibbler
-* Changed backend library midi-message to midi-events
-* Removed backend library MIDIlib
-* Removed logging to reduce parsing overhead
+* Removed logging attributes (messages, rejected, processed) to reduce parsing overhead 
 * Updated dependencies versions
 * Source updated to Ruby 2.7 code conventions (method keyword parameters instead of options = {}, hash keys as 'key:' instead of ':key =>', etc.)
+* Changed backend library midi-message to midi-events
+* Removed backend library MIDIlib
+* Renamed module to MIDIParser instead of Nibbler
+* Renamed gem to midi-parser instead of nibbler
 * Minor docs fixing 
 * TODO: update tests to use rspec instead of rake
 * TODO: migrate to (or confirm it's working ok on) Ruby 3.0 or Ruby 3.1
 
+## Then, why does exist this library if it is mostly a clone of another library?
+
+The author has been developing since 2016 a Ruby project called
+[Musa DSL](https://github.com/javier-sy/musa-dsl) that needs a way
+of representing MIDI Events and a way of communicating with
+MIDI Instruments and MIDI Control Surfaces.
+
+[Ari Russo](https://github.com/arirusso) has done a great job creating
+several interdependent Ruby libraries that allow
+MIDI Events representation ([MIDI Message](https://github.com/arirusso/midi-message)
+and [Nibbler](https://github.com/arirusso/nibbler))
+and communication with MIDI Instruments and MIDI Control Surfaces
+([unimidi](https://github.com/arirusso/unimidi),
+[ffi-coremidi](https://github.com/arirusso/ffi-coremidi) and others)
+that, **with some modifications**, I've been using in MusaDSL.
+
+After thinking about the best approach to publish MusaDSL
+I've decided to publish my own renamed version of the modified dependencies because:
+
+* Some differences on the approach of the modifications vs the original library doesn't allow to merge the modifications on the original libraries.
+* Then the renaming of the libraries is needed to avoid confusing existent users of the original libraries.
+* Due to some of the interdependencies of Ari Russo libraries,
+  the modification and renaming on some of the low level libraries (ffi-coremidi, etc.)
+  forces to modify and rename unimidi library.
+* The original libraries have features
+  (very detailed logging and processing history information, not locking behaviour when waiting input midi messages)
+  that are not needed in MusaDSL and, in fact,
+  can degrade the performance on some use case scenarios in MusaDSL.
+
+All in all I have decided to publish a suite of libraries optimized for MusaDSL use case that also can be used by other people in their projects.
+
+| Function | Library | Based on Ari Russo's| Difference |
+| --- | --- | --- | --- |
+| MIDI Events representation | [MIDI Events](https://github.com/javier-sy/midi-events) | [MIDI Message](https://github.com/arirusso/midi-message) | removed parsing, small improvements |
+| MIDI Data parsing | [MIDI Parser](https://github.com/javier-sy/midi-parser) | [Nibbler](https://github.com/arirusso/nibbler) | removed process history information, minor optimizations |
+| MIDI communication with Instruments and Control Surfaces | [MIDI Communications](https://github.com/javier-sy/midi-communications) | [unimidi](https://github.com/arirusso/unimidi) | use of [MIDI Communications MacOS Layer](https://github.com/javier-sy/midi-communications-macos)
+| Low level MIDI interface to MacOS | [MIDI Communications MacOS Layer](https://github.com/javier-sy/midi-communications-macos) | [ffi-coremidi](https://github.com/arirusso/ffi-coremidi) | removed process history information, locking behaviour when waiting midi events, minor optimizations |
+| Low level MIDI interface to Linux | **TO DO** | | |
+| Low level MIDI interface to JRuby | **TO DO** | | |
+| Low level MIDI interface to Windows | **TO DO** | | |
 
 ## Author
 
-* [Ari Russo](http://github.com/arirusso) <ari.russo at gmail.com>
+* [Javier Sánchez Yeste](https://github.com/javier-sy)
+
+## Acknowledgements
+
+Thanks to [Ari Russo](http://github.com/arirusso) for his ruby library [Nibbler](https://github.com/arirusso/nibbler) licensed as Apache License 2.0.
 
 ## License
 
-Apache 2.0, See the file LICENSE
+[MIDI Parser](https://github.com/javier-sy/midi-parser) Copyright (c) 2021 [Javier Sánchez Yeste](https://yeste.studio), licensed under LGPL 3.0 License
 
-Copyright (c) 2011-2015 Ari Russo
+[Nibbler](https://github.com/arirusso/nibbler) Copyright (c) 2011-2015 [Ari Russo](http://arirusso.com), licensed under Apache License 2.0 (see the file LICENSE.nibbler)

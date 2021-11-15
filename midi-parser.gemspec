@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version     = '0.3.0'
   s.date        = '2021-11-13'
   s.summary     = 'A Ruby  library for parsing MIDI Event Messages'
-  s.description = 'MIDI Parser is a library for parsing MIDI Event Messages received from any MIDI device hrough other libraries such as midi-communications or unimidi'
+  s.description = 'MIDI Parser is a library for parsing MIDI Event Messages received from any MIDI device through other libraries such as midi-communications or unimidi'
   s.authors     = ['Javier Sánchez Yeste']
   s.email       = 'javier.sy@gmail.com'
   s.files       = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features|samples)/}) }
