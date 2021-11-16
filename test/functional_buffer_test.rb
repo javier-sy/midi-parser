@@ -1,9 +1,7 @@
 require 'helper'
 
 class MIDIParser::FunctionalBufferTest < Minitest::Test
-
   context 'Parser::Buffer' do
-
     setup do
       @midi_parser = MIDIParser.new
     end
@@ -58,7 +56,5 @@ class MIDIParser::FunctionalBufferTest < Minitest::Test
       @midi_parser.parse(0x40)
       assert_equal(['9', '4', '0'], @midi_parser.buffer)
     end
-
   end
-
 end

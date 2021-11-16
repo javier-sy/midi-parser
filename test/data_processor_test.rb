@@ -1,9 +1,7 @@
 require 'helper'
 
 class MIDIParser::DataProcessorTest < Minitest::Test
-
   context 'DataProcessor' do
-
     setup do
       @processor = MIDIParser::DataProcessor
     end

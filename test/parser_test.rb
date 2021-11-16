@@ -1,17 +1,13 @@
 require 'helper'
 
 class MIDIParser::ParserTest < Minitest::Test
-
   context 'Parser' do
-
     setup do
       @parser = MIDIParser::Parser.new
     end
 
     context '#lookahead' do
-
       context 'basic' do
-
         setup do
           @parser.instance_variable_set('@buffer', ['9', '0', '4', '0', '5', '0'])
           fragment = @parser.send(:get_fragment, 0)
@@ -22,11 +18,9 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_equal([0x90, 0x40, 0x50], @output[:message].to_a)
           assert_equal(['9', '0', '4', '0', '5', '0'], @output[:processed])
         end
-
       end
 
       context 'with trailing nibbles' do
-
         setup do
           @parser.instance_variable_set('@buffer', ['9', '0', '4', '0', '5', '0', '5', '0'])
           fragment = @parser.send(:get_fragment, 0)
@@ -37,11 +31,9 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_equal([9, 0], @output[:message].status)
           assert_equal([0x40, 0x50], @output[:message].data)
         end
-
       end
 
       context 'incomplete' do
-
         setup do
           @parser.instance_variable_set('@buffer', ['9', '0', '4'])
           fragment = @parser.send(:get_fragment, 0)
@@ -51,15 +43,11 @@ class MIDIParser::ParserTest < Minitest::Test
         should 'not return anything' do
           assert_nil @output
         end
-
       end
-
     end
 
     context '#lookahead_for_sysex' do
-
       context 'basic' do
-
         setup do
           @parser.instance_variable_set('@buffer', 'F04110421240007F0041F750'.split(//))
           fragment = @parser.send(:get_fragment, 0)
@@ -70,11 +58,9 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_equal([0xF0, 0x41, 0x10, 0x42, 0x12, 0x40, 0x00, 0x7F, 0x00, 0x41, 0xF7], @output[:message].to_a.flatten)
           assert_equal('F04110421240007F0041F7'.split(//), @output[:processed])
         end
-
       end
 
       context 'incomplete' do
-
         setup do
           @parser.instance_variable_set('@buffer', ['9', '0', '4'])
           fragment = @parser.send(:get_fragment, 0)
@@ -84,14 +70,11 @@ class MIDIParser::ParserTest < Minitest::Test
         should 'not return anything' do
           assert_nil @output
         end
-
       end
     end
 
     context '#process' do
-
       context 'basic' do
-
         setup do
           short = ['9', '0', '4', '0', '5', '0', '5', '0']
           @output = @parser.send(:process, short)
@@ -104,11 +87,9 @@ class MIDIParser::ParserTest < Minitest::Test
         should 'have trailing nibbles in buffer' do
           assert_equal(['5', '0'], @parser.buffer)
         end
-
       end
 
       context 'with running status' do
-
         setup do
           two_msgs = ['9', '0', '4', '0', '5', '0', '4', '0', '6', '0']
           @output = @parser.send(:process, two_msgs)
@@ -123,11 +104,9 @@ class MIDIParser::ParserTest < Minitest::Test
         should 'not have anything left in the buffer' do
           assert_empty(@parser.buffer)
         end
-
       end
 
       context 'with multiple overlapping calls' do
-
         setup do
           @short = ['9', '0', '4', '0', '5', '0', '9', '0']
           @short2 = ['3', '0', '2', '0', '1', '0']
@@ -146,15 +125,11 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_equal(::MIDIEvents::NoteOn, @output2.first.class)
           assert_equal(['1', '0'], @parser.buffer)
         end
-
       end
-
     end
 
     context '#nibbles_to_message' do
-
       context 'basic' do
-
         setup do
           short = ['9', '0', '4', '0', '5', '0', '5', '0']
           @parser.instance_variable_set('@buffer', short)
@@ -166,11 +141,9 @@ class MIDIParser::ParserTest < Minitest::Test
           refute_nil @output
           assert_equal(::MIDIEvents::NoteOn, @output[:message].class)
         end
-
       end
 
       context 'with leading nibbles' do
-
         setup do
           short = ['5', '0', '9', '0', '4', '0', '5', '0']
           @parser.instance_variable_set('@buffer', short)
@@ -182,11 +155,9 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_nil @output
           assert_equal(['5', '0', '9', '0', '4', '0', '5', '0'], @parser.buffer)
         end
-
       end
 
       context 'with trailing nibbles' do
-
         setup do
           short = ['9', '0', '4', '0', '5', '0', '5', '0']
           @parser.instance_variable_set('@buffer', short)
@@ -199,11 +170,9 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_equal(::MIDIEvents::NoteOn, @output[:message].class)
           assert_equal(['9', '0', '4', '0', '5', '0'], @output[:processed])
         end
-
       end
 
       context 'with running status' do
-
         setup do
           short = ['9', '0', '4', '0', '5', '0']
           @parser.instance_variable_set('@buffer', short)
@@ -222,11 +191,9 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_equal(::MIDIEvents::NoteOn, @output[:message].class)
           assert_equal(['5', '0', '6', '0'], @output[:processed])
         end
-
       end
 
       context 'sysex' do
-
         setup do
           sysex = 'F04110421240007F0041F750'.split(//)
           @parser.instance_variable_set('@buffer', sysex)
@@ -239,11 +206,7 @@ class MIDIParser::ParserTest < Minitest::Test
           assert_equal(::MIDIEvents::SystemExclusive::Command, @output[:message].class)
           assert_equal('F04110421240007F0041F7'.split(//), @output[:processed])
         end
-
       end
-
     end
-
   end
-
 end
