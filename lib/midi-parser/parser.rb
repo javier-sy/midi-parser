@@ -130,6 +130,10 @@ module MIDIParser
     class RunningStatus
       extend Forwardable
 
+      def initialize
+        @state = nil
+      end
+
       def_delegators :@state, :[]
 
       def cancel

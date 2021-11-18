@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.authors     = ['Javier Sánchez Yeste']
   s.email       = 'javier.sy@gmail.com'
   s.files       = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features|samples)/}) }
-  s.homepage    = 'https://github.com/javier-sy/midi-events'
+  s.homepage    = 'https://github.com/javier-sy/midi-parser'
   s.license     = 'LGPL-3.0'
 
   s.required_ruby_version = '~> 2.7'
@@ -19,4 +19,10 @@ Gem::Specification.new do |s|
     # "documentation_uri" => "",
     # "changelog_uri" => ""
   #}
+
+  s.add_runtime_dependency 'midi-events', '~> 0.5', '>= 0.5.0'
+
+  s.add_development_dependency 'minitest', '~> 5.14', '>= 5.14.4'
+  s.add_development_dependency 'rake', '~> 13.0', '>= 13.0.6'
+  s.add_development_dependency 'shoulda-context', '~> 2.0', '>= 2.0.0'
 end
