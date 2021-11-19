@@ -20,7 +20,7 @@ require 'midi-parser/session'
 # Parse MIDI Messages
 #
 module MIDIParser
-  VERSION = '0.3.0'.freeze
+  VERSION = '0.3.1'.freeze
 
   # Shortcut to a new parser session
   def self.new(...)

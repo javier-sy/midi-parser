@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'midi-parser'
-  s.version     = '0.3.0'
-  s.date        = '2021-11-13'
+  s.version     = '0.3.1'
+  s.date        = '2021-11-19'
   s.summary     = 'A Ruby  library for parsing MIDI Event Messages'
   s.description = 'MIDI Parser is a library for parsing MIDI Event Messages received from any MIDI device through other libraries such as midi-communications or unimidi'
   s.authors     = ['Javier Sánchez Yeste']
