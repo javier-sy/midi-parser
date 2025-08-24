@@ -16,12 +16,12 @@ require 'midi-parser/message_builder'
 require 'midi-parser/parser'
 require 'midi-parser/session'
 
+require_relative 'midi-parser/version'
+
 #
 # Parse MIDI Messages
 #
 module MIDIParser
-  VERSION = '0.3.1'.freeze
-
   # Shortcut to a new parser session
   def self.new(...)
     Session.new(...)
