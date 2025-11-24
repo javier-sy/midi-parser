@@ -1,28 +1,53 @@
 module MIDIParser
-  # Accepts various types of input and returns an array of hex digit chars
+  # Normalizes various input formats into hex nibble strings for parsing.
   #
-  # Ideally this would output Integer objects. However, given that Ruby numerics 0x0 and 0x00 result in the same
-  # object (0 Integer), this would limit the parser to only working with bytes instead of both nibbles and bytes.
+  # DataProcessor accepts bytes, hex strings, nibbles, and arrays, converting
+  # them into a consistent format (uppercase hex character strings) that can
+  # be processed by the {Parser}.
   #
-  # For example, if the input were "5" then the processor would return an ambiguous 0x5
+  # This module handles the complexity of accepting multiple input formats,
+  # allowing users to mix and match formats in a single parse call.
   #
+  # @note This outputs String objects rather than Integers because Ruby's
+  #   0x0 and 0x00 are the same Integer, which would make nibbles and bytes
+  #   ambiguous.
+  #
+  # @example Processing bytes
+  #   MIDIParser::DataProcessor.process([0x90, 0x40, 0x40])
+  #   # => ["9", "0", "4", "0", "4", "0"]
+  #
+  # @example Processing hex string
+  #   MIDIParser::DataProcessor.process(["904040"])
+  #   # => ["9", "0", "4", "0", "4", "0"]
+  #
+  # @example Processing mixed input
+  #   MIDIParser::DataProcessor.process(["9", "0", 0x40, 64])
+  #   # => ["9", "0", "4", "0", "4", "0"]
+  #
+  # @api private
   module DataProcessor
     extend self
 
-    # Accepts various types of input and returns an array of hex digit chars
-    # Invalid input is disregarded
+    # Converts various input formats to an array of hex nibble strings.
     #
-    # @param [*String, *Integer] args
-    # @return [Array<String>] An array of hex string nibbles eg "6", "a"
+    # Invalid input (non-hex characters, out-of-range bytes) is filtered out.
+    #
+    # @param args [Array<String, Integer, Array>] input data in various formats
+    # @return [Array<String>] array of uppercase hex nibble strings (e.g., ["9", "0", "4", "0"])
+    #
+    # @example
+    #   DataProcessor.process([0x90, "40", 0x40])
+    #   # => ["9", "0", "4", "0", "4", "0"]
     def process(*args)
       args.map { |arg| convert(arg) }.flatten.compact.map(&:upcase)
     end
 
     private
 
-    # Convert a single value to hex chars
-    # @param [Array<Integer>, Array<String>, Integer, String] value
-    # @return [Array<String>]
+    # Converts a single value to hex character strings.
+    #
+    # @param value [Array, String, Integer] value to convert
+    # @return [Array<String>, nil] hex character strings, or nil if invalid
     def convert(value)
       case value
       when Array then value.map { |arr| process(*arr) }.reduce(:+)
@@ -31,17 +56,18 @@ module MIDIParser
       end
     end
 
-    # Limit the given number to bytes usable in MIDI ie values (0..240)
-    # returns nil if the byte is outside of that range
-    # @param [Integer] num
-    # @return [Integer, nil]
+    # Filters numeric values to valid MIDI byte range.
+    #
+    # @param num [Integer] byte value to filter
+    # @return [Integer, nil] the value if valid (0x00-0xFF), nil otherwise
     def filter_numeric(num)
       num if (0x00..0xFF).include?(num)
     end
 
-    # Only return valid hex string characters
-    # @param [String] string
-    # @return [String]
+    # Filters a string to only valid hex characters.
+    #
+    # @param string [String] input string
+    # @return [String] string with only hex characters (0-9, A-F)
     def filter_string(string)
       string.gsub(/[^0-9a-fA-F]/, '').upcase
     end

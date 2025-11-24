@@ -1,15 +1,32 @@
 module MIDIParser
+  # Low-level MIDI message parser.
+  #
+  # Parser handles the actual parsing logic, converting hex nibbles into
+  # MIDI message objects. It maintains an internal buffer and supports
+  # MIDI running status.
+  #
+  # This class is typically not used directly. Use {Session} instead for
+  # a higher-level interface.
+  #
+  # @api private
   class Parser
+    # @return [Array<String>] the current buffer of hex nibble strings
     attr_reader :buffer
 
+    # Creates a new parser with empty buffer and running status.
     def initialize
       @running_status = RunningStatus.new
       @buffer = []
     end
 
-    # Process the given nibbles and add them to the buffer
-    # @param [Array<String, Integer>] nibbles
-    # @return [Array<MIDIEvent>]
+    # Processes hex nibbles and returns any complete MIDI messages.
+    #
+    # Nibbles are accumulated in the buffer. When enough data is present
+    # to form a complete MIDI message, it is parsed and returned.
+    #
+    # @param nibbles [Array<String>] hex nibble strings (e.g., ["9", "0", "4", "0"])
+    # @return [Array<MIDIEvents::ChannelMessage, MIDIEvents::SystemMessage>]
+    #   array of parsed messages
     def process(nibbles)
       messages = []
       pointer = 0
@@ -33,9 +50,10 @@ module MIDIParser
       messages
     end
 
-    # If possible, convert the given fragment to a MIDI message
-    # @param [Array<String>] fragment A fragment of data eg ["9", "0", "4", "0", "5", "0"]
-    # @return [Hash, nil]
+    # Attempts to convert a fragment of nibbles to a MIDI message.
+    #
+    # @param fragment [Array<String>] hex nibble strings (e.g., ["9", "0", "4", "0"])
+    # @return [Hash, nil] hash with :message and :processed keys, or nil if incomplete
     def nibbles_to_message(fragment)
       if fragment.length >= 2
         # convert the part of the fragment to start with to a numeric
@@ -76,15 +94,15 @@ module MIDIParser
       @buffer[pointer, (@buffer.length - pointer)]
     end
 
-    # If the given fragment has at least the given number of nibbles, use it to build a hash that can be used
-    # to build a MIDI message
+    # Attempts to build a MIDI message from a fragment with enough nibbles.
     #
-    # @param [Integer] num_nibbles
-    # @param [Array<String>] fragment
-    # @param [Hash] options
-    # @option options [String] :status_nibble_2
-    # @option options [Boolean] :recursive
-    # @return [Hash, nil]
+    # @param fragment [Array<String>] hex nibble strings
+    # @param message_builder [MessageBuilder] builder for the message type
+    # @param options [Hash] additional options
+    # @option options [String] :status_nibble_2 cached status nibble for running status
+    # @option options [Boolean] :recursive whether to try shorter lengths
+    # @option options [Integer] :offset nibble offset adjustment
+    # @return [Hash, nil] hash with :message and :processed keys, or nil
     def lookahead(fragment, message_builder, options = {})
       offset = options.fetch(:offset, 0)
       num_nibbles = message_builder.num_nibbles + offset
@@ -127,6 +145,12 @@ module MIDIParser
       end
     end
 
+    # Manages MIDI running status state.
+    #
+    # Running status is a MIDI optimization where the status byte can be omitted
+    # if it's the same as the previous message.
+    #
+    # @api private
     class RunningStatus
       extend Forwardable
 
@@ -136,16 +160,24 @@ module MIDIParser
 
       def_delegators :@state, :[]
 
+      # Clears the running status state.
+      # @return [nil]
       def cancel
         @state = nil
       end
 
-      # Is there an active cached running status?
-      # @return [Boolean]
+      # Checks if running status is available.
+      # @return [Boolean] true if a previous status is cached
       def possible?
         !@state.nil?
       end
 
+      # Stores the running status state.
+      #
+      # @param offset [Integer] nibble offset for running status
+      # @param message_builder [MessageBuilder] builder for message type
+      # @param status_nibble_2 [String] second status nibble
+      # @return [Hash] the stored state
       def set(offset, message_builder, status_nibble_2)
         @state = {
           message_builder: message_builder,
