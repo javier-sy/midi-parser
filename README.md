@@ -132,8 +132,6 @@ MIDI Parser generates [midi-events](http://github.com/javier-sy/midi-events) obj
 * Renamed module to MIDIParser instead of Nibbler
 * Renamed gem to midi-parser instead of nibbler
 * Minor docs fixing 
-* TODO: update tests to use rspec instead of rake
-* TODO: migrate to (or confirm it's working ok on) Ruby 3.0 or Ruby 3.1
 
 ## Then, why does exist this library if it is mostly a clone of another library?
 
