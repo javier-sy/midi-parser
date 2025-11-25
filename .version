@@ -1,0 +1,6 @@
+# Configuración de versión para midi-parser
+GEM_NAME="midi-parser"
+MODULE_NAME="MIDIParser"
+VERSION_FILE="lib/midi-parser/version.rb"
+GEMSPEC_FILE="midi-parser.gemspec"
+TEST_COMMAND="bundle exec rake test"
