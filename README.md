@@ -175,6 +175,6 @@ Thanks to [Ari Russo](http://github.com/arirusso) for his ruby library [Nibbler]
 
 ## License
 
-[MIDI Parser](https://github.com/javier-sy/midi-parser) Copyright (c) 2021 [Javier Sánchez Yeste](https://yeste.studio), licensed under LGPL 3.0 License
+[MIDI Parser](https://github.com/javier-sy/midi-parser) Copyright (c) 2021-2025 [Javier Sánchez Yeste](https://yeste.studio), licensed under LGPL 3.0 License
 
 [Nibbler](https://github.com/arirusso/nibbler) Copyright (c) 2011-2015 [Ari Russo](http://arirusso.com), licensed under Apache License 2.0 (see the file LICENSE.nibbler)
