@@ -14,15 +14,13 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.7'
 
-  # TODO
-  #s.metadata    = {
-    # "source_code_uri" => "https://",
-    # "homepage_uri" => "",
-    # "documentation_uri" => "",
-    # "changelog_uri" => ""
-  #}
+  s.metadata = {
+    'homepage_uri' => s.homepage,
+    'source_code_uri' => s.homepage,
+    'documentation_uri' => 'https://www.rubydoc.info/gems/midi-parser'
+  }
 
-  s.add_runtime_dependency 'midi-events', '~> 0.6'
+  s.add_runtime_dependency 'midi-events', '~> 0.7'
 
   s.add_development_dependency 'minitest', '~>5', '>= 5.14.4'
   s.add_development_dependency 'rake', '~>13', '>= 13.0.6'
