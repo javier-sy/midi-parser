@@ -3,7 +3,7 @@ require_relative 'lib/midi-parser/version'
 Gem::Specification.new do |s|
   s.name        = 'midi-parser'
   s.version     = MIDIParser::VERSION
-  s.date        = '2025-08-23'
+  s.date        = '2026-09-07'
   s.summary     = 'A Ruby  library for parsing MIDI Event Messages'
   s.description = 'MIDI Parser is a library for parsing MIDI Event Messages received from any MIDI device through other libraries such as midi-communications or unimidi'
   s.authors     = ['Javier Sánchez Yeste']
