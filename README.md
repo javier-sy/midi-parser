@@ -15,7 +15,7 @@ This library is part of a suite of Ruby libraries for MIDI:
 | Low level MIDI interface to MacOS | [MIDI Communications MacOS Layer](https://github.com/javier-sy/midi-communications-macos) |
 | Low level MIDI interface to Linux | **TO DO** | 
 | Low level MIDI interface to JRuby | **TO DO** | 
-| Low level MIDI interface to Windows | **TO DO** | 
+| Low level MIDI interface to Windows | [MIDI Communications Windows Layer](https://github.com/javier-sy/midi-communications-windows) |
 
 This library is based on [Ari Russo's](http://github.com/arirusso) library [Nibbler](https://github.com/arirusso/nibbler).
 
