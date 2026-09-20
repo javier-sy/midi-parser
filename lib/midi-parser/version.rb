@@ -1,3 +1,3 @@
 module MIDIParser
-  VERSION = '0.5.1'.freeze
+  VERSION = '1.0.0'.freeze
 end
